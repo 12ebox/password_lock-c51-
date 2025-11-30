@@ -10,16 +10,16 @@ sbit RS = P3^6;
 sbit RW = P3^5;
 sbit E  = P3^4;
 
-// ·äÃùÆ÷
+// èœ‚é¸£å™¨
 sbit BEEP = P3^7;
 
-//°´¼ü
+//æŒ‰é”®
 sbit L0 = P2^4;
 sbit L1 = P2^5;
 sbit L2 = P2^6;
 sbit L3 = P2^7;
 
-//È«¾Ö±äÁ¿
+//å…¨å±€å˜é‡
 uchar default_password[] = "123456";
 uchar input_password[7]; 
 uchar input_index = 0; 
@@ -30,7 +30,7 @@ uchar error_count = 0;
 uchar locked = 0;
 uint lock_timer = 0;
 lock_seconds = 0;
-//ÉùÃ÷
+//å£°æ˜
 void delay1ms();
 void Check_Busy_LCD();
 void Write_Cmd_LCD(uchar cmd);
@@ -42,7 +42,7 @@ void Clear_Line(uchar line);
 uchar Get_Key();
 void Beep(uchar type);
 
-//ÑÓÊ±º¯Êı
+//å»¶æ—¶å‡½æ•°
 void delay1ms() {
     uint i = 1000;
     while(i--) _nop_();
@@ -53,7 +53,7 @@ void delayms(uint time) {
     while(time--) { for(i=0;i<80;i++); }
 }
 
-// LCDÅĞ¶ÏÕ¼ÓÃ
+// LCDåˆ¤æ–­å ç”¨
 void Check_Busy_LCD() {
     uchar temp;
     do {
@@ -66,7 +66,7 @@ void Check_Busy_LCD() {
     E = 0;
 }
 
-// Ğ´ÃüÁî
+// å†™å‘½ä»¤
 void Write_Cmd_LCD(uchar cmd) {
     Check_Busy_LCD();
     E = 0;
@@ -79,7 +79,7 @@ void Write_Cmd_LCD(uchar cmd) {
     delay1ms();
 }
 
-//Ğ´Êı¾İ
+//å†™æ•°æ®
 void Write_Data_LCD(uchar dat) {
     Check_Busy_LCD();
     E = 0;
@@ -92,7 +92,7 @@ void Write_Data_LCD(uchar dat) {
     delay1ms();
 }
 
-// ³õÊ¼»¯
+// åˆå§‹åŒ–
 void Init_LCD() {
     Write_Cmd_LCD(0x38); //
     Write_Cmd_LCD(0x0c); //
@@ -100,13 +100,13 @@ void Init_LCD() {
     Write_Cmd_LCD(0x01); //
 }
 
-//Ğ´×Ö·û
+//å†™å­—ç¬¦
 void Write_Char_LCD(uchar addr, uchar dat) {
     Write_Cmd_LCD(addr);
     Write_Data_LCD(dat);
 }
 
-//Ğ´×Ö·û´®
+//å†™å­—ç¬¦ä¸²
 void Write_Str_LCD(uchar addr, char *str) {
     Write_Cmd_LCD(addr);
     while(*str > 0) Write_Data_LCD(*str++);
@@ -114,7 +114,7 @@ void Write_Str_LCD(uchar addr, char *str) {
 
 
 
-//Çå¿ÕĞĞ
+//æ¸…ç©ºè¡Œ
 void Clear_Line(uchar line) {
     uchar i;
     uchar addr = (line == 1) ? 0x80 : 0xC0;
@@ -122,11 +122,11 @@ void Clear_Line(uchar line) {
     for(i = 0; i < 16; i++) Write_Data_LCD(' ');
 }
 
-//°´¼ü¾ØÕó¶¨Òå
+//æŒ‰é”®çŸ©é˜µå®šä¹‰
 /* 0 1 2 3 */
 /* 4 5 6 7 */
 /* 8 9 10(A) 11(B) */
-/* 12(¡Ì) 13(C) 14(D) 15(*) */
+/* 12(âˆš) 13(C) 14(D) 15(*) */
 uchar Get_Key() {
     uchar temp, num = 0xFF;
     uchar i;
@@ -152,7 +152,7 @@ uchar Get_Key() {
     return num;
 }
 
-//·äÃùÆ÷
+//èœ‚é¸£å™¨
 void Beep(uchar type) {
 		uint i;
     if(type == 1) {
@@ -168,7 +168,7 @@ void Beep(uchar type) {
     }
     BEEP = 1; //
 }
-//ÖØÖÃÏµÍ³
+//é‡ç½®ç³»ç»Ÿ
 void Reset_System() {
     input_index = 0;
     admin_mode = 0;
@@ -195,7 +195,7 @@ void main() {
 		//lock_seconds = 5;
     while(1) {
         key = Get_Key();
-				//¼ì²éËø¶¨
+				//æ£€æŸ¥é”å®š
         if(locked) {
             if(delay_count >= 1000) { 
                 delay_count = 0;
@@ -220,23 +220,23 @@ void main() {
             }
             delay_count++;
             delayms(1);
-            continue; // Ìø³ö°´¼ü
+            continue; // è·³å‡ºæŒ‰é”®
         }
 				//******//
         if(key != 0xFF && !locked) {
             if(key < 10) { // 0123456789
                 if(input_index < 6) {
                     if(admin_mode == 0) {
-                        // ¿Í»§Ä£Ê½
+                        // å®¢æˆ·æ¨¡å¼
                         input_password[input_index++] = key + '0';
                         Write_Char_LCD(0xC0 + 3 + input_index, '*');
                     } else if(admin_mode == 1 || admin_mode == 2) {
-                        // ¹ÜÀíÔ±Ä£Ê½
+                        // ç®¡ç†å‘˜æ¨¡å¼
                         input_password[input_index++] = key + '0';
                         Write_Char_LCD(0xC0 + 3 + input_index, '*');
                     }
                 }
-            } else if(key == 12) { //È·ÈÏ
+            } else if(key == 12) { //ç¡®è®¤
                 input_password[input_index] = '\0';
                 
                 if(admin_mode == 0) {
@@ -245,12 +245,12 @@ void main() {
                         Clear_Line(1);
                         Write_Str_LCD(0x80, "Welcome!");
                         Beep(1);
-												error_count = 0;//ÃÜÂëÕıÈ·ÖØÖÃ´íÎó¼ÆÊı
+												error_count = 0;//å¯†ç æ­£ç¡®é‡ç½®é”™è¯¯è®¡æ•°
                     } else {
                         Clear_Line(1);
                         Write_Str_LCD(0x80, "Error!");
                         Beep(2);
-												error_count++;//Ôö¼ÓÒ»´Î´íÎó
+												error_count++;//å¢åŠ ä¸€æ¬¡é”™è¯¯
 												if(error_count >= 3) {
                             locked = 1;
                             lock_timer = system_timer;
@@ -266,7 +266,7 @@ void main() {
                     Write_Str_LCD(0x80, "Enter Password:");
                     
                 } else if(admin_mode == 1) {
-                    // ´Ë´¦ÅĞ¶ÏÓï¾ä¿ªÊ¼Ö´ĞĞ¹ÜÀíÔ±Ä£Ê½
+                    // æ­¤å¤„åˆ¤æ–­è¯­å¥å¼€å§‹æ‰§è¡Œç®¡ç†å‘˜æ¨¡å¼
                     if(strcmp(input_password, default_password) == 0) {
                         admin_mode = 2;
                         password_step = 1;
@@ -310,12 +310,12 @@ void main() {
                     }
                 }
                 
-            } else if(key == 13) { //Çå³ıÃÜÂë
+            } else if(key == 13) { //æ¸…é™¤å¯†ç 
                 input_index = 0;
                 memset(input_password, 0, sizeof(input_password));
                 Clear_Line(2);
                 
-            } else if(key == 15) { //½øÈë¹ÜÀíÔ±Ä£Ê½(*)
+            } else if(key == 15) { //è¿›å…¥ç®¡ç†å‘˜æ¨¡å¼(*)
                 if(admin_mode == 0) {
                     admin_mode = 1;
                     input_index = 0;
@@ -329,42 +329,3 @@ void main() {
         }
     }
 }
-//void main() {
-//    uchar key;
-//    Init_LCD();
-//    Write_Str_LCD(0x80, "Enter Password:"); //
-
-//    while(1) {
-//        key = Get_Key();
-//        if(key != 0xFF) {
-//            if(key < 10) { // 
-//                if(input_index < 6) {
-//                    input_password[input_index++] = key + '0';
-//                    Write_Char_LCD(0xC0 + input_index, '*'); // 
-//                }
-//            } else if(key == 12) { //È·ÈÏ¼ü
-//                input_password[input_index] = '\0';
-//                if(strcmp(input_password, default_password) == 0) {
-//                    Clear_Line(1);
-//                    Write_Str_LCD(0x80, "Welcome!");
-//                    Beep(1); // 
-//                } else {
-//                    Clear_Line(1);
-//                    Write_Str_LCD(0x80, "Error!");
-//                    Beep(2); // 
-//                }
-//                // 
-//                input_index = 0;
-//                memset(input_password, 0, sizeof(input_password));
-//                delayms(2000);
-//                Clear_Line(1);
-//                Clear_Line(2);
-//                Write_Str_LCD(0x80, "Enter Password:");
-//            } else if(key == 13) { //Çå³ı¼ü
-//                input_index = 0;
-//                memset(input_password, 0, sizeof(input_password));
-//                Clear_Line(2);
-//            }
-//        }
-//    }
-//}
